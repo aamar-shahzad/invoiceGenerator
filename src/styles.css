@@ -31,9 +31,14 @@ header h1 {
 
 .tabs button {
   border: 1px solid #c4d2e2;
-  background: #fff;
+  background: #e9f0fa;
+  color: #334155;
   border-radius: 999px;
   padding: 0.5rem 1rem;
+}
+
+.tabs button:hover {
+  background: #dde8f7;
 }
 
 .tabs button.active {
