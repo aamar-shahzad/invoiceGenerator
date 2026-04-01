@@ -44,6 +44,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
               <thead>
                 <tr>
                   <th>Description</th>
+                  <th>Period</th>
                   <th>Hours</th>
                   <th>Rate / Hour</th>
                   <th>Line Total</th>
@@ -53,6 +54,9 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
                 {invoice.items.map((item) => (
                   <tr key={item.id}>
                     <td>{item.description || '-'}</td>
+                    <td>
+                      {item.periodFrom} to {item.periodTo}
+                    </td>
                     <td>{item.hours}</td>
                     <td>
                       {formatCurrency(item.hourlyRate, settings.currency, settings.locale)}

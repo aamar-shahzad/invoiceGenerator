@@ -8,12 +8,12 @@ type InvoiceEditorProps = {
 function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
   const updateItem = (
     id: string,
-    key: "description" | "hours" | "hourlyRate",
+    key: "description" | "periodFrom" | "periodTo" | "hours" | "hourlyRate",
     value: string,
   ) => {
     const nextItems = invoice.items.map((item) => {
       if (item.id !== id) return item;
-      if (key === "description") {
+      if (key === "description" || key === "periodFrom" || key === "periodTo") {
         return { ...item, [key]: value };
       }
       return { ...item, [key]: Number(value) };
@@ -29,6 +29,8 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
         {
           id: crypto.randomUUID(),
           description: "",
+          periodFrom: invoice.issueDate,
+          periodTo: invoice.issueDate,
           hours: 1,
           hourlyRate: 0,
         },
@@ -46,6 +48,8 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
             {
               id: crypto.randomUUID(),
               description: "",
+              periodFrom: invoice.issueDate,
+              periodTo: invoice.issueDate,
               hours: 1,
               hourlyRate: 0,
             },
@@ -146,6 +150,26 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
                 value={item.description}
                 onChange={(event) =>
                   updateItem(item.id, "description", event.target.value)
+                }
+              />
+            </label>
+            <label className="item-field">
+              <span>From</span>
+              <input
+                type="date"
+                value={item.periodFrom}
+                onChange={(event) =>
+                  updateItem(item.id, "periodFrom", event.target.value)
+                }
+              />
+            </label>
+            <label className="item-field">
+              <span>To</span>
+              <input
+                type="date"
+                value={item.periodTo}
+                onChange={(event) =>
+                  updateItem(item.id, "periodTo", event.target.value)
                 }
               />
             </label>
