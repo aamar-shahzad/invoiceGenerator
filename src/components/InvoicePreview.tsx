@@ -28,7 +28,6 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
               <h2>INVOICE</h2>
               <p>No: {invoice.invoiceNumber}</p>
               <p>Issued: {invoice.issueDate}</p>
-              <p>Due: {invoice.dueDate}</p>
             </div>
           </header>
 
@@ -40,38 +39,36 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
             <p>{invoice.customer.phone || '+1 000 000 0000'}</p>
           </section>
 
-          <table>
-            <thead>
-              <tr>
-                <th>Description</th>
-                <th>Period</th>
-                <th>Hours</th>
-                <th>Rate / Hour</th>
-                <th>Line Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoice.items.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.description || '-'}</td>
-                  <td>
-                    {item.periodFrom} to {item.periodTo}
-                  </td>
-                  <td>{item.hours}</td>
-                  <td>
-                    {formatCurrency(item.hourlyRate, settings.currency, settings.locale)}
-                  </td>
-                  <td>
-                    {formatCurrency(
-                      calcLineTotal(item.hours, item.hourlyRate),
-                      settings.currency,
-                      settings.locale,
-                    )}
-                  </td>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th>Hours</th>
+                  <th>Rate / Hour</th>
+                  <th>Line Total</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {invoice.items.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.description || '-'}</td>
+                    <td>{item.hours}</td>
+                    <td>
+                      {formatCurrency(item.hourlyRate, settings.currency, settings.locale)}
+                    </td>
+                    <td>
+                      {formatCurrency(
+                        calcLineTotal(item.hours, item.hourlyRate),
+                        settings.currency,
+                        settings.locale,
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           <div className="totals">
             <p>

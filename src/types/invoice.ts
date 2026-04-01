@@ -15,8 +15,6 @@ export type CustomerProfile = {
 export type InvoiceLineItem = {
   id: string
   description: string
-  periodFrom: string
-  periodTo: string
   hours: number
   hourlyRate: number
 }
@@ -31,7 +29,6 @@ export type InvoiceSettings = {
 export type InvoiceDraft = {
   invoiceNumber: string
   issueDate: string
-  dueDate: string
   customer: CustomerProfile
   items: InvoiceLineItem[]
   taxRate: number
@@ -64,14 +61,10 @@ export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {
 }
 
 const today = new Date().toISOString().slice(0, 10)
-const plus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-  .toISOString()
-  .slice(0, 10)
 
 export const DEFAULT_INVOICE_DRAFT: InvoiceDraft = {
   invoiceNumber: `INV-${Date.now().toString().slice(-6)}`,
   issueDate: today,
-  dueDate: plus30Days,
   customer: {
     name: '',
     address: '',
@@ -82,8 +75,6 @@ export const DEFAULT_INVOICE_DRAFT: InvoiceDraft = {
     {
       id: crypto.randomUUID(),
       description: '',
-      periodFrom: today,
-      periodTo: plus30Days,
       hours: 1,
       hourlyRate: 0,
     },

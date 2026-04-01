@@ -16,7 +16,8 @@ body {
 .app-shell {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
 }
 
 header h1 {
@@ -25,6 +26,7 @@ header h1 {
 
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin: 1rem 0;
 }
@@ -77,6 +79,7 @@ input,
 textarea,
 button {
   font: inherit;
+  font-size: 16px;
 }
 
 input,
@@ -120,7 +123,7 @@ button:disabled {
 
 .item-row {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 0.8fr 0.9fr auto;
+  grid-template-columns: 1.8fr 0.9fr 1fr auto;
   gap: 0.45rem;
 }
 
@@ -145,6 +148,12 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin: 1rem 0;
+  min-width: 620px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 th,
@@ -178,7 +187,20 @@ td {
   gap: 1rem;
 }
 
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
 @media (max-width: 760px) {
+  .app-shell {
+    padding: 0.8rem;
+  }
+
+  .tabs button {
+    flex: 1 1 calc(50% - 0.5rem);
+  }
+
   .grid {
     grid-template-columns: 1fr;
   }
@@ -202,5 +224,14 @@ td {
   .action-bar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .action-buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .action-buttons button {
+    width: 100%;
   }
 }

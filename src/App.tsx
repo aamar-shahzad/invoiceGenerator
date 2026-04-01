@@ -29,7 +29,7 @@ const sameCustomer = (a: CustomerProfile, b: CustomerProfile): boolean =>
   a.phone === b.phone;
 
 function App() {
-  const [activeTab, setActiveTab] = useState<TabKey>("settings");
+  const [activeTab, setActiveTab] = useState<TabKey>("invoice");
   const [busy, setBusy] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const [lastPdfFile, setLastPdfFile] = useState<File | null>(null);
@@ -230,7 +230,7 @@ function App() {
               </p>
               {statusMessage ? <p className="muted">{statusMessage}</p> : null}
             </div>
-            <div style={{ display: "flex", gap: "0.5rem" }}>
+            <div className="action-buttons">
               <button disabled={busy} onClick={handleDownloadPdf}>
                 {busy ? "Working..." : "Export & Download PDF"}
               </button>

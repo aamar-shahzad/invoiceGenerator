@@ -69,14 +69,6 @@ export const loadInvoiceDraft = (): InvoiceDraft => {
       ? legacyItems.map((item) => ({
           id: item.id || crypto.randomUUID(),
           description: item.description ?? "",
-          periodFrom:
-            typeof item.periodFrom === "string"
-              ? item.periodFrom
-              : DEFAULT_INVOICE_DRAFT.items[0].periodFrom,
-          periodTo:
-            typeof item.periodTo === "string"
-              ? item.periodTo
-              : DEFAULT_INVOICE_DRAFT.items[0].periodTo,
           hours: toNumberOr(item.hours, toNumberOr(item.quantity, 1)),
           hourlyRate: toNumberOr(
             item.hourlyRate,

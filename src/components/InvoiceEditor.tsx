@@ -8,12 +8,12 @@ type InvoiceEditorProps = {
 function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
   const updateItem = (
     id: string,
-    key: "description" | "periodFrom" | "periodTo" | "hours" | "hourlyRate",
+    key: "description" | "hours" | "hourlyRate",
     value: string,
   ) => {
     const nextItems = invoice.items.map((item) => {
       if (item.id !== id) return item;
-      if (key === "description" || key === "periodFrom" || key === "periodTo") {
+      if (key === "description") {
         return { ...item, [key]: value };
       }
       return { ...item, [key]: Number(value) };
@@ -29,8 +29,6 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
         {
           id: crypto.randomUUID(),
           description: "",
-          periodFrom: invoice.issueDate,
-          periodTo: invoice.dueDate,
           hours: 1,
           hourlyRate: 0,
         },
@@ -48,8 +46,6 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
             {
               id: crypto.randomUUID(),
               description: "",
-              periodFrom: invoice.issueDate,
-              periodTo: invoice.dueDate,
               hours: 1,
               hourlyRate: 0,
             },
@@ -77,16 +73,6 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
             value={invoice.issueDate}
             onChange={(event) =>
               onChange({ ...invoice, issueDate: event.target.value })
-            }
-          />
-        </label>
-        <label>
-          Due Date
-          <input
-            type="date"
-            value={invoice.dueDate}
-            onChange={(event) =>
-              onChange({ ...invoice, dueDate: event.target.value })
             }
           />
         </label>
@@ -161,23 +147,10 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
               }
             />
             <input
-              type="date"
-              value={item.periodFrom}
-              onChange={(event) =>
-                updateItem(item.id, "periodFrom", event.target.value)
-              }
-            />
-            <input
-              type="date"
-              value={item.periodTo}
-              onChange={(event) =>
-                updateItem(item.id, "periodTo", event.target.value)
-              }
-            />
-            <input
               type="number"
               min={0}
               step="0.25"
+              placeholder="Hours (e.g. 8)"
               value={item.hours}
               onChange={(event) =>
                 updateItem(item.id, "hours", event.target.value)
@@ -187,6 +160,7 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
               type="number"
               min={0}
               step="0.01"
+              placeholder="Rate/hr (e.g. 45)"
               value={item.hourlyRate}
               onChange={(event) =>
                 updateItem(item.id, "hourlyRate", event.target.value)
