@@ -1,43 +1,61 @@
-import type { InvoiceDraft } from '../types/invoice'
+import type { InvoiceDraft } from "../types/invoice";
 
 type InvoiceEditorProps = {
-  invoice: InvoiceDraft
-  onChange: (next: InvoiceDraft) => void
-}
+  invoice: InvoiceDraft;
+  onChange: (next: InvoiceDraft) => void;
+};
 
 function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
   const updateItem = (
     id: string,
-    key: 'description' | 'quantity' | 'unitPrice',
+    key: "description" | "periodFrom" | "periodTo" | "hours" | "hourlyRate",
     value: string,
   ) => {
     const nextItems = invoice.items.map((item) => {
-      if (item.id !== id) return item
-      if (key === 'description') return { ...item, description: value }
-      return { ...item, [key]: Number(value) }
-    })
-    onChange({ ...invoice, items: nextItems })
-  }
+      if (item.id !== id) return item;
+      if (key === "description" || key === "periodFrom" || key === "periodTo") {
+        return { ...item, [key]: value };
+      }
+      return { ...item, [key]: Number(value) };
+    });
+    onChange({ ...invoice, items: nextItems });
+  };
 
   const addItem = () => {
     onChange({
       ...invoice,
       items: [
         ...invoice.items,
-        { id: crypto.randomUUID(), description: '', quantity: 1, unitPrice: 0 },
+        {
+          id: crypto.randomUUID(),
+          description: "",
+          periodFrom: invoice.issueDate,
+          periodTo: invoice.dueDate,
+          hours: 1,
+          hourlyRate: 0,
+        },
       ],
-    })
-  }
+    });
+  };
 
   const removeItem = (id: string) => {
-    const nextItems = invoice.items.filter((item) => item.id !== id)
+    const nextItems = invoice.items.filter((item) => item.id !== id);
     onChange({
       ...invoice,
       items: nextItems.length
         ? nextItems
-        : [{ id: crypto.randomUUID(), description: '', quantity: 1, unitPrice: 0 }],
-    })
-  }
+        : [
+            {
+              id: crypto.randomUUID(),
+              description: "",
+              periodFrom: invoice.issueDate,
+              periodTo: invoice.dueDate,
+              hours: 1,
+              hourlyRate: 0,
+            },
+          ],
+    });
+  };
 
   return (
     <section className="card">
@@ -57,7 +75,9 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
           <input
             type="date"
             value={invoice.issueDate}
-            onChange={(event) => onChange({ ...invoice, issueDate: event.target.value })}
+            onChange={(event) =>
+              onChange({ ...invoice, issueDate: event.target.value })
+            }
           />
         </label>
         <label>
@@ -65,7 +85,9 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
           <input
             type="date"
             value={invoice.dueDate}
-            onChange={(event) => onChange({ ...invoice, dueDate: event.target.value })}
+            onChange={(event) =>
+              onChange({ ...invoice, dueDate: event.target.value })
+            }
           />
         </label>
       </div>
@@ -131,23 +153,47 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
             <input
               placeholder="Description"
               value={item.description}
-              onChange={(event) => updateItem(item.id, 'description', event.target.value)}
+              onChange={(event) =>
+                updateItem(item.id, "description", event.target.value)
+              }
+            />
+            <input
+              type="date"
+              value={item.periodFrom}
+              onChange={(event) =>
+                updateItem(item.id, "periodFrom", event.target.value)
+              }
+            />
+            <input
+              type="date"
+              value={item.periodTo}
+              onChange={(event) =>
+                updateItem(item.id, "periodTo", event.target.value)
+              }
             />
             <input
               type="number"
               min={0}
-              step="1"
-              value={item.quantity}
-              onChange={(event) => updateItem(item.id, 'quantity', event.target.value)}
+              step="0.25"
+              value={item.hours}
+              onChange={(event) =>
+                updateItem(item.id, "hours", event.target.value)
+              }
             />
             <input
               type="number"
               min={0}
               step="0.01"
-              value={item.unitPrice}
-              onChange={(event) => updateItem(item.id, 'unitPrice', event.target.value)}
+              value={item.hourlyRate}
+              onChange={(event) =>
+                updateItem(item.id, "hourlyRate", event.target.value)
+              }
             />
-            <button type="button" className="ghost danger" onClick={() => removeItem(item.id)}>
+            <button
+              type="button"
+              className="ghost danger"
+              onClick={() => removeItem(item.id)}
+            >
               Remove
             </button>
           </div>
@@ -187,12 +233,14 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
           <textarea
             rows={3}
             value={invoice.notes}
-            onChange={(event) => onChange({ ...invoice, notes: event.target.value })}
+            onChange={(event) =>
+              onChange({ ...invoice, notes: event.target.value })
+            }
           />
         </label>
       </div>
     </section>
-  )
+  );
 }
 
-export default InvoiceEditor
+export default InvoiceEditor;

@@ -15,8 +15,10 @@ export type CustomerProfile = {
 export type InvoiceLineItem = {
   id: string
   description: string
-  quantity: number
-  unitPrice: number
+  periodFrom: string
+  periodTo: string
+  hours: number
+  hourlyRate: number
 }
 
 export type InvoiceSettings = {
@@ -83,8 +85,10 @@ export const DEFAULT_INVOICE_DRAFT: InvoiceDraft = {
     {
       id: crypto.randomUUID(),
       description: '',
-      quantity: 1,
-      unitPrice: 0,
+      periodFrom: today,
+      periodTo: plus30Days,
+      hours: 1,
+      hourlyRate: 0,
     },
   ],
   taxRate: 13,

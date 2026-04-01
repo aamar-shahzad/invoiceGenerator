@@ -4,33 +4,37 @@ import {
   DEFAULT_INVOICE_SETTINGS,
   type BusinessProfile,
   type InvoiceDraft,
+  type InvoiceLineItem,
   type InvoiceSettings,
-} from '../types/invoice'
+} from "../types/invoice";
 
-const BUSINESS_KEY = 'invoice-app:business'
-const SETTINGS_KEY = 'invoice-app:settings'
-const INVOICE_DRAFT_KEY = 'invoice-app:draft'
+const BUSINESS_KEY = "invoice-app:business";
+const SETTINGS_KEY = "invoice-app:settings";
+const INVOICE_DRAFT_KEY = "invoice-app:draft";
 
 const safeRead = <T>(key: string, fallback: T): T => {
   try {
-    const item = localStorage.getItem(key)
-    if (!item) return fallback
+    const item = localStorage.getItem(key);
+    if (!item) return fallback;
 
-    return { ...fallback, ...JSON.parse(item) }
+    return { ...fallback, ...JSON.parse(item) };
   } catch {
-    return fallback
+    return fallback;
   }
-}
+};
+
+const toNumberOr = (value: unknown, fallback: number): number =>
+  typeof value === "number" && Number.isFinite(value) ? value : fallback;
 
 export const loadBusinessProfile = (): BusinessProfile =>
-  safeRead(BUSINESS_KEY, DEFAULT_BUSINESS_PROFILE)
+  safeRead(BUSINESS_KEY, DEFAULT_BUSINESS_PROFILE);
 
 export const saveBusinessProfile = (profile: BusinessProfile): void => {
-  localStorage.setItem(BUSINESS_KEY, JSON.stringify(profile))
-}
+  localStorage.setItem(BUSINESS_KEY, JSON.stringify(profile));
+};
 
 export const loadInvoiceSettings = (): InvoiceSettings => {
-  const settings = safeRead(SETTINGS_KEY, DEFAULT_INVOICE_SETTINGS)
+  const settings = safeRead(SETTINGS_KEY, DEFAULT_INVOICE_SETTINGS);
   return {
     ...DEFAULT_INVOICE_SETTINGS,
     ...settings,
@@ -38,15 +42,22 @@ export const loadInvoiceSettings = (): InvoiceSettings => {
       ...DEFAULT_INVOICE_SETTINGS.defaultCustomer,
       ...(settings.defaultCustomer ?? {}),
     },
-  }
-}
+  };
+};
 
 export const saveInvoiceSettings = (settings: InvoiceSettings): void => {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
-}
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+};
 
 export const loadInvoiceDraft = (): InvoiceDraft => {
-  const draft = safeRead(INVOICE_DRAFT_KEY, DEFAULT_INVOICE_DRAFT)
+  const draft = safeRead(INVOICE_DRAFT_KEY, DEFAULT_INVOICE_DRAFT);
+  type LegacyInvoiceLineItem = InvoiceLineItem & {
+    quantity?: number;
+    unitPrice?: number;
+  };
+
+  const legacyItems = (draft.items ?? []) as LegacyInvoiceLineItem[];
+
   return {
     ...DEFAULT_INVOICE_DRAFT,
     ...draft,
@@ -54,16 +65,28 @@ export const loadInvoiceDraft = (): InvoiceDraft => {
       ...DEFAULT_INVOICE_DRAFT.customer,
       ...(draft.customer ?? {}),
     },
-    items:
-      draft.items?.map((item) => ({
-        id: item.id || crypto.randomUUID(),
-        description: item.description ?? '',
-        quantity: Number.isFinite(item.quantity) ? item.quantity : 1,
-        unitPrice: Number.isFinite(item.unitPrice) ? item.unitPrice : 0,
-      })) ?? DEFAULT_INVOICE_DRAFT.items,
-  }
-}
+    items: legacyItems.length
+      ? legacyItems.map((item) => ({
+          id: item.id || crypto.randomUUID(),
+          description: item.description ?? "",
+          periodFrom:
+            typeof item.periodFrom === "string"
+              ? item.periodFrom
+              : DEFAULT_INVOICE_DRAFT.items[0].periodFrom,
+          periodTo:
+            typeof item.periodTo === "string"
+              ? item.periodTo
+              : DEFAULT_INVOICE_DRAFT.items[0].periodTo,
+          hours: toNumberOr(item.hours, toNumberOr(item.quantity, 1)),
+          hourlyRate: toNumberOr(
+            item.hourlyRate,
+            toNumberOr(item.unitPrice, 0),
+          ),
+        }))
+      : DEFAULT_INVOICE_DRAFT.items,
+  };
+};
 
 export const saveInvoiceDraft = (invoice: InvoiceDraft): void => {
-  localStorage.setItem(INVOICE_DRAFT_KEY, JSON.stringify(invoice))
-}
+  localStorage.setItem(INVOICE_DRAFT_KEY, JSON.stringify(invoice));
+};

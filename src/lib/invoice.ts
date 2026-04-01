@@ -3,13 +3,13 @@ import type { InvoiceDraft, InvoiceTotals } from '../types/invoice'
 const roundMoney = (value: number): number =>
   Math.round((value + Number.EPSILON) * 100) / 100
 
-export const calcLineTotal = (quantity: number, unitPrice: number): number =>
-  roundMoney(quantity * unitPrice)
+export const calcLineTotal = (hours: number, hourlyRate: number): number =>
+  roundMoney(hours * hourlyRate)
 
 export const calculateTotals = (invoice: InvoiceDraft): InvoiceTotals => {
   const subtotal = roundMoney(
     invoice.items.reduce(
-      (sum, item) => sum + calcLineTotal(item.quantity, item.unitPrice),
+      (sum, item) => sum + calcLineTotal(item.hours, item.hourlyRate),
       0,
     ),
   )

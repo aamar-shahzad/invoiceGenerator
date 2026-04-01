@@ -120,7 +120,7 @@ button:disabled {
 
 .item-row {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr auto;
+  grid-template-columns: 1.6fr 1fr 1fr 0.8fr 0.9fr auto;
   gap: 0.45rem;
 }
 
