@@ -139,33 +139,42 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
       <div className="items">
         {invoice.items.map((item) => (
           <div key={item.id} className="item-row">
-            <input
-              placeholder="Description"
-              value={item.description}
-              onChange={(event) =>
-                updateItem(item.id, "description", event.target.value)
-              }
-            />
-            <input
-              type="number"
-              min={0}
-              step="0.25"
-              placeholder="Hours (e.g. 8)"
-              value={item.hours}
-              onChange={(event) =>
-                updateItem(item.id, "hours", event.target.value)
-              }
-            />
-            <input
-              type="number"
-              min={0}
-              step="0.01"
-              placeholder="Rate/hr (e.g. 45)"
-              value={item.hourlyRate}
-              onChange={(event) =>
-                updateItem(item.id, "hourlyRate", event.target.value)
-              }
-            />
+            <label className="item-field">
+              <span>Description</span>
+              <input
+                placeholder="Description"
+                value={item.description}
+                onChange={(event) =>
+                  updateItem(item.id, "description", event.target.value)
+                }
+              />
+            </label>
+            <label className="item-field">
+              <span>Hours</span>
+              <input
+                type="number"
+                min={0}
+                step="0.25"
+                placeholder="e.g. 8"
+                value={item.hours}
+                onChange={(event) =>
+                  updateItem(item.id, "hours", event.target.value)
+                }
+              />
+            </label>
+            <label className="item-field">
+              <span>Rate / Hour</span>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                placeholder="e.g. 45"
+                value={item.hourlyRate}
+                onChange={(event) =>
+                  updateItem(item.id, "hourlyRate", event.target.value)
+                }
+              />
+            </label>
             <button
               type="button"
               className="ghost danger"

@@ -127,6 +127,16 @@ button:disabled {
   gap: 0.45rem;
 }
 
+.item-field {
+  margin: 0;
+  gap: 0.25rem;
+}
+
+.item-field span {
+  font-size: 0.78rem;
+  color: #5a6775;
+}
+
 .preview {
   background: #fff;
   border: 1px solid #dde7f1;
