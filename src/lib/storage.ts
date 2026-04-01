@@ -77,10 +77,10 @@ export const loadInvoiceDraft = (): InvoiceDraft => {
             typeof item.periodTo === "string"
               ? item.periodTo
               : DEFAULT_INVOICE_DRAFT.items[0].periodTo,
-          hours: toNumberOr(item.hours, toNumberOr(item.quantity, 1)),
+          hours: toNumberOr(item.hours, toNumberOr(item.quantity, Number.NaN)),
           hourlyRate: toNumberOr(
             item.hourlyRate,
-            toNumberOr(item.unitPrice, 0),
+            toNumberOr(item.unitPrice, Number.NaN),
           ),
         }))
       : DEFAULT_INVOICE_DRAFT.items,

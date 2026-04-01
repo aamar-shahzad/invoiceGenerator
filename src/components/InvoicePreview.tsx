@@ -57,9 +57,11 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
                     <td>
                       {item.periodFrom} to {item.periodTo}
                     </td>
-                    <td>{item.hours}</td>
+                    <td>{Number.isFinite(item.hours) ? item.hours : '-'}</td>
                     <td>
-                      {formatCurrency(item.hourlyRate, settings.currency, settings.locale)}
+                      {Number.isFinite(item.hourlyRate)
+                        ? formatCurrency(item.hourlyRate, settings.currency, settings.locale)
+                        : '-'}
                     </td>
                     <td>
                       {formatCurrency(

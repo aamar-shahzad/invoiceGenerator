@@ -16,7 +16,7 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
       if (key === "description" || key === "periodFrom" || key === "periodTo") {
         return { ...item, [key]: value };
       }
-      return { ...item, [key]: Number(value) };
+      return { ...item, [key]: value === "" ? Number.NaN : Number(value) };
     });
     onChange({ ...invoice, items: nextItems });
   };
@@ -31,8 +31,8 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
           description: "",
           periodFrom: invoice.issueDate,
           periodTo: invoice.issueDate,
-          hours: 1,
-          hourlyRate: 0,
+          hours: Number.NaN,
+          hourlyRate: Number.NaN,
         },
       ],
     });
@@ -50,8 +50,8 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
               description: "",
               periodFrom: invoice.issueDate,
               periodTo: invoice.issueDate,
-              hours: 1,
-              hourlyRate: 0,
+              hours: Number.NaN,
+              hourlyRate: Number.NaN,
             },
           ],
     });
@@ -180,7 +180,7 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
                 min={0}
                 step="0.25"
                 placeholder="e.g. 8"
-                value={item.hours}
+                value={Number.isFinite(item.hours) ? item.hours : ""}
                 onChange={(event) =>
                   updateItem(item.id, "hours", event.target.value)
                 }
@@ -193,7 +193,7 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
                 min={0}
                 step="0.01"
                 placeholder="e.g. 45"
-                value={item.hourlyRate}
+                value={Number.isFinite(item.hourlyRate) ? item.hourlyRate : ""}
                 onChange={(event) =>
                   updateItem(item.id, "hourlyRate", event.target.value)
                 }

@@ -9,6 +9,8 @@ export const buildInvoicePdf = async (
     scale: 2,
     useCORS: true,
     backgroundColor: '#ffffff',
+    windowWidth: 1280,
+    windowHeight: 1800,
   })
 
   const imageData = canvas.toDataURL('image/png')

@@ -3,8 +3,11 @@ import type { InvoiceDraft, InvoiceTotals } from '../types/invoice'
 const roundMoney = (value: number): number =>
   Math.round((value + Number.EPSILON) * 100) / 100
 
+const safeNumber = (value: number): number =>
+  Number.isFinite(value) ? Math.max(value, 0) : 0
+
 export const calcLineTotal = (hours: number, hourlyRate: number): number =>
-  roundMoney(hours * hourlyRate)
+  roundMoney(safeNumber(hours) * safeNumber(hourlyRate))
 
 export const calculateTotals = (invoice: InvoiceDraft): InvoiceTotals => {
   const subtotal = roundMoney(
@@ -13,7 +16,7 @@ export const calculateTotals = (invoice: InvoiceDraft): InvoiceTotals => {
       0,
     ),
   )
-  const taxAmount = roundMoney((subtotal * Math.max(invoice.taxRate, 0)) / 100)
+  const taxAmount = roundMoney((subtotal * safeNumber(invoice.taxRate)) / 100)
 
   return {
     subtotal,
@@ -31,4 +34,4 @@ export const formatCurrency = (
     style: 'currency',
     currency,
     maximumFractionDigits: 2,
-  }).format(value)
+  }).format(safeNumber(value))
