@@ -3,8 +3,6 @@ export type BusinessProfile = {
   address: string
   email: string
   phone: string
-  website: string
-  taxId: string
 }
 
 export type CustomerProfile = {
@@ -26,6 +24,7 @@ export type InvoiceSettings = {
   locale: string
   defaultTaxRate: number
   defaultDiscount: number
+  defaultCustomer: CustomerProfile
 }
 
 export type InvoiceDraft = {
@@ -50,15 +49,19 @@ export const DEFAULT_BUSINESS_PROFILE: BusinessProfile = {
   address: '',
   email: '',
   phone: '',
-  website: '',
-  taxId: '',
 }
 
 export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {
-  currency: 'USD',
-  locale: 'en-US',
-  defaultTaxRate: 0,
+  currency: 'CAD',
+  locale: 'en-CA',
+  defaultTaxRate: 13,
   defaultDiscount: 0,
+  defaultCustomer: {
+    name: '',
+    address: '',
+    email: '',
+    phone: '',
+  },
 }
 
 const today = new Date().toISOString().slice(0, 10)
@@ -84,7 +87,7 @@ export const DEFAULT_INVOICE_DRAFT: InvoiceDraft = {
       unitPrice: 0,
     },
   ],
-  taxRate: 0,
+  taxRate: 13,
   discount: 0,
   notes: '',
 }

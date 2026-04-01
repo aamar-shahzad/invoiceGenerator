@@ -29,8 +29,17 @@ export const saveBusinessProfile = (profile: BusinessProfile): void => {
   localStorage.setItem(BUSINESS_KEY, JSON.stringify(profile))
 }
 
-export const loadInvoiceSettings = (): InvoiceSettings =>
-  safeRead(SETTINGS_KEY, DEFAULT_INVOICE_SETTINGS)
+export const loadInvoiceSettings = (): InvoiceSettings => {
+  const settings = safeRead(SETTINGS_KEY, DEFAULT_INVOICE_SETTINGS)
+  return {
+    ...DEFAULT_INVOICE_SETTINGS,
+    ...settings,
+    defaultCustomer: {
+      ...DEFAULT_INVOICE_SETTINGS.defaultCustomer,
+      ...(settings.defaultCustomer ?? {}),
+    },
+  }
+}
 
 export const saveInvoiceSettings = (settings: InvoiceSettings): void => {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))

@@ -1,17 +1,21 @@
-import type { BusinessProfile, InvoiceSettings } from '../types/invoice'
+import type { BusinessProfile, CustomerProfile, InvoiceSettings } from '../types/invoice'
 
 type SettingsPanelProps = {
   business: BusinessProfile
   settings: InvoiceSettings
+  customerDefaults: CustomerProfile
   onBusinessChange: (next: BusinessProfile) => void
   onSettingsChange: (next: InvoiceSettings) => void
+  onCustomerDefaultsChange: (next: CustomerProfile) => void
 }
 
 function SettingsPanel({
   business,
   settings,
+  customerDefaults,
   onBusinessChange,
   onSettingsChange,
+  onCustomerDefaultsChange,
 }: SettingsPanelProps) {
   return (
     <section className="card">
@@ -25,15 +29,6 @@ function SettingsPanel({
             value={business.name}
             onChange={(event) =>
               onBusinessChange({ ...business, name: event.target.value })
-            }
-          />
-        </label>
-        <label>
-          Tax ID
-          <input
-            value={business.taxId}
-            onChange={(event) =>
-              onBusinessChange({ ...business, taxId: event.target.value })
             }
           />
         </label>
@@ -57,15 +52,6 @@ function SettingsPanel({
           />
         </label>
         <label className="span-2">
-          Website
-          <input
-            value={business.website}
-            onChange={(event) =>
-              onBusinessChange({ ...business, website: event.target.value })
-            }
-          />
-        </label>
-        <label className="span-2">
           Address
           <textarea
             rows={3}
@@ -81,29 +67,14 @@ function SettingsPanel({
       <div className="grid">
         <label>
           Currency
-          <input
-            value={settings.currency}
-            maxLength={3}
-            onChange={(event) =>
-              onSettingsChange({
-                ...settings,
-                currency: event.target.value.toUpperCase(),
-              })
-            }
-          />
+          <input value="CAD" disabled />
         </label>
         <label>
-          Locale
-          <input
-            value={settings.locale}
-            placeholder="en-US"
-            onChange={(event) =>
-              onSettingsChange({ ...settings, locale: event.target.value })
-            }
-          />
+          Tax Region
+          <input value="Ontario (HST)" disabled />
         </label>
         <label>
-          Default Tax %
+          Default Tax % (Ontario HST)
           <input
             type="number"
             min={0}
@@ -128,6 +99,61 @@ function SettingsPanel({
               onSettingsChange({
                 ...settings,
                 defaultDiscount: Number(event.target.value),
+              })
+            }
+          />
+        </label>
+      </div>
+
+      <h3>Default Customer (Bill To)</h3>
+      <p className="muted">Auto-filled in invoice customer details.</p>
+      <div className="grid">
+        <label>
+          Customer Name
+          <input
+            value={customerDefaults.name}
+            onChange={(event) =>
+              onCustomerDefaultsChange({
+                ...customerDefaults,
+                name: event.target.value,
+              })
+            }
+          />
+        </label>
+        <label>
+          Customer Email
+          <input
+            type="email"
+            value={customerDefaults.email}
+            onChange={(event) =>
+              onCustomerDefaultsChange({
+                ...customerDefaults,
+                email: event.target.value,
+              })
+            }
+          />
+        </label>
+        <label>
+          Customer Phone
+          <input
+            value={customerDefaults.phone}
+            onChange={(event) =>
+              onCustomerDefaultsChange({
+                ...customerDefaults,
+                phone: event.target.value,
+              })
+            }
+          />
+        </label>
+        <label className="span-2">
+          Customer Address
+          <textarea
+            rows={3}
+            value={customerDefaults.address}
+            onChange={(event) =>
+              onCustomerDefaultsChange({
+                ...customerDefaults,
+                address: event.target.value,
               })
             }
           />

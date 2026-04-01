@@ -77,7 +77,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
               </strong>
             </p>
             <p>
-              <span>Tax ({invoice.taxRate}%)</span>
+              <span>Tax - Ontario HST ({invoice.taxRate}%)</span>
               <strong>
                 {formatCurrency(totals.taxAmount, settings.currency, settings.locale)}
               </strong>
