@@ -112,15 +112,26 @@ function App() {
   }, [invoice.customer]);
 
   const totals = useMemo(() => calculateTotals(invoice), [invoice]);
+  const hasValidLineItem = useMemo(
+    () =>
+      invoice.items.some(
+        (item) =>
+          Number.isFinite(item.hours) &&
+          item.hours > 0 &&
+          Number.isFinite(item.hourlyRate) &&
+          item.hourlyRate >= 0,
+      ),
+    [invoice.items],
+  );
   const canExport = Boolean(
-    business.name && invoice.customer.name && invoice.items.length > 0,
+    business.name && invoice.customer.name && hasValidLineItem,
   );
 
   const createPdf = async (): Promise<File | null> => {
     if (!previewRef.current) return null;
     if (!canExport) {
       setStatusMessage(
-        "Please complete business name, customer name, and one line item.",
+        "Please complete business name, customer name, and at least one valid line item.",
       );
       return null;
     }

@@ -5,13 +5,33 @@ export const buildInvoicePdf = async (
   element: HTMLElement,
   fileName: string,
 ): Promise<File> => {
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    windowWidth: 1280,
-    windowHeight: 1800,
-  })
+  const exportHost = document.createElement('div')
+  exportHost.style.position = 'fixed'
+  exportHost.style.left = '-10000px'
+  exportHost.style.top = '0'
+  exportHost.style.width = '1024px'
+  exportHost.style.background = '#ffffff'
+  exportHost.style.zIndex = '-1'
+
+  const clonedElement = element.cloneNode(true) as HTMLElement
+  clonedElement.style.width = '980px'
+  clonedElement.style.maxWidth = '980px'
+  clonedElement.style.margin = '0 auto'
+  exportHost.appendChild(clonedElement)
+  document.body.appendChild(exportHost)
+
+  let canvas: HTMLCanvasElement
+  try {
+    canvas = await html2canvas(clonedElement, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      windowWidth: 1280,
+      windowHeight: 1800,
+    })
+  } finally {
+    document.body.removeChild(exportHost)
+  }
 
   const imageData = canvas.toDataURL('image/png')
   const pdf = new jsPDF('p', 'pt', 'a4')
