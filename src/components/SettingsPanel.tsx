@@ -1,21 +1,17 @@
-import type { BusinessProfile, CustomerProfile, InvoiceSettings } from '../types/invoice'
+import type { BusinessProfile, InvoiceSettings } from '../types/invoice'
 
 type SettingsPanelProps = {
   business: BusinessProfile
   settings: InvoiceSettings
-  customerDefaults: CustomerProfile
   onBusinessChange: (next: BusinessProfile) => void
   onSettingsChange: (next: InvoiceSettings) => void
-  onCustomerDefaultsChange: (next: CustomerProfile) => void
 }
 
 function SettingsPanel({
   business,
   settings,
-  customerDefaults,
   onBusinessChange,
   onSettingsChange,
-  onCustomerDefaultsChange,
 }: SettingsPanelProps) {
   return (
     <section className="card">
@@ -84,76 +80,6 @@ function SettingsPanel({
               onSettingsChange({
                 ...settings,
                 defaultTaxRate: Number(event.target.value),
-              })
-            }
-          />
-        </label>
-        <label>
-          Default Discount %
-          <input
-            type="number"
-            min={0}
-            step="0.01"
-            value={settings.defaultDiscount}
-            onChange={(event) =>
-              onSettingsChange({
-                ...settings,
-                defaultDiscount: Number(event.target.value),
-              })
-            }
-          />
-        </label>
-      </div>
-
-      <h3>Default Customer (Bill To)</h3>
-      <p className="muted">Auto-filled in invoice customer details.</p>
-      <div className="grid">
-        <label>
-          Customer Name
-          <input
-            value={customerDefaults.name}
-            onChange={(event) =>
-              onCustomerDefaultsChange({
-                ...customerDefaults,
-                name: event.target.value,
-              })
-            }
-          />
-        </label>
-        <label>
-          Customer Email
-          <input
-            type="email"
-            value={customerDefaults.email}
-            onChange={(event) =>
-              onCustomerDefaultsChange({
-                ...customerDefaults,
-                email: event.target.value,
-              })
-            }
-          />
-        </label>
-        <label>
-          Customer Phone
-          <input
-            value={customerDefaults.phone}
-            onChange={(event) =>
-              onCustomerDefaultsChange({
-                ...customerDefaults,
-                phone: event.target.value,
-              })
-            }
-          />
-        </label>
-        <label className="span-2">
-          Customer Address
-          <textarea
-            rows={3}
-            value={customerDefaults.address}
-            onChange={(event) =>
-              onCustomerDefaultsChange({
-                ...customerDefaults,
-                address: event.target.value,
               })
             }
           />

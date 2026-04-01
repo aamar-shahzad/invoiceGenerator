@@ -93,6 +93,9 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
       </div>
 
       <h3>Bill To</h3>
+      <p className="muted">
+        Customer details entered here are saved as default for next invoices.
+      </p>
       <div className="grid">
         <label>
           Customer Name
@@ -213,18 +216,6 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
             value={invoice.taxRate}
             onChange={(event) =>
               onChange({ ...invoice, taxRate: Number(event.target.value) })
-            }
-          />
-        </label>
-        <label>
-          Discount %
-          <input
-            type="number"
-            min={0}
-            step="0.01"
-            value={invoice.discount}
-            onChange={(event) =>
-              onChange({ ...invoice, discount: Number(event.target.value) })
             }
           />
         </label>

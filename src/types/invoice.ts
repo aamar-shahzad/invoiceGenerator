@@ -25,7 +25,6 @@ export type InvoiceSettings = {
   currency: string
   locale: string
   defaultTaxRate: number
-  defaultDiscount: number
   defaultCustomer: CustomerProfile
 }
 
@@ -36,7 +35,6 @@ export type InvoiceDraft = {
   customer: CustomerProfile
   items: InvoiceLineItem[]
   taxRate: number
-  discount: number
   notes: string
 }
 
@@ -57,7 +55,6 @@ export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {
   currency: 'CAD',
   locale: 'en-CA',
   defaultTaxRate: 13,
-  defaultDiscount: 0,
   defaultCustomer: {
     name: '',
     address: '',
@@ -92,6 +89,5 @@ export const DEFAULT_INVOICE_DRAFT: InvoiceDraft = {
     },
   ],
   taxRate: 13,
-  discount: 0,
   notes: '',
 }

@@ -15,11 +15,18 @@ import {
 } from "./lib/storage";
 import type {
   BusinessProfile,
+  CustomerProfile,
   InvoiceDraft,
   InvoiceSettings,
 } from "./types/invoice";
 
 type TabKey = "settings" | "invoice" | "preview";
+
+const sameCustomer = (a: CustomerProfile, b: CustomerProfile): boolean =>
+  a.name === b.name &&
+  a.address === b.address &&
+  a.email === b.email &&
+  a.phone === b.phone;
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabKey>("settings");
@@ -68,21 +75,41 @@ function App() {
     setInvoice((previous) => ({
       ...previous,
       taxRate: settings.defaultTaxRate,
-      discount: settings.defaultDiscount,
     }));
-  }, [settings.defaultDiscount, settings.defaultTaxRate]);
+  }, [settings.defaultTaxRate]);
 
   useEffect(() => {
-    setInvoice((previous) => ({
-      ...previous,
-      customer: {
+    setInvoice((previous) => {
+      const nextCustomer = {
         name: previous.customer.name || settings.defaultCustomer.name,
         address: previous.customer.address || settings.defaultCustomer.address,
         email: previous.customer.email || settings.defaultCustomer.email,
         phone: previous.customer.phone || settings.defaultCustomer.phone,
-      },
-    }));
+      };
+
+      if (sameCustomer(previous.customer, nextCustomer)) {
+        return previous;
+      }
+
+      return {
+        ...previous,
+        customer: nextCustomer,
+      };
+    });
   }, [settings.defaultCustomer]);
+
+  useEffect(() => {
+    setSettings((previous) => {
+      if (sameCustomer(previous.defaultCustomer, invoice.customer)) {
+        return previous;
+      }
+
+      return {
+        ...previous,
+        defaultCustomer: invoice.customer,
+      };
+    });
+  }, [invoice.customer]);
 
   const totals = useMemo(() => calculateTotals(invoice), [invoice]);
   const canExport = Boolean(
@@ -175,15 +202,8 @@ function App() {
         <SettingsPanel
           business={business}
           settings={settings}
-          customerDefaults={settings.defaultCustomer}
           onBusinessChange={setBusiness}
           onSettingsChange={setSettings}
-          onCustomerDefaultsChange={(nextCustomer) =>
-            setSettings((previous) => ({
-              ...previous,
-              defaultCustomer: nextCustomer,
-            }))
-          }
         />
       ) : null}
 

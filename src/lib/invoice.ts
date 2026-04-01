@@ -13,14 +13,12 @@ export const calculateTotals = (invoice: InvoiceDraft): InvoiceTotals => {
       0,
     ),
   )
-  const discountAmount = roundMoney((subtotal * Math.max(invoice.discount, 0)) / 100)
-  const taxableAmount = Math.max(0, subtotal - discountAmount)
-  const taxAmount = roundMoney((taxableAmount * Math.max(invoice.taxRate, 0)) / 100)
+  const taxAmount = roundMoney((subtotal * Math.max(invoice.taxRate, 0)) / 100)
 
   return {
     subtotal,
     taxAmount,
-    total: roundMoney(taxableAmount + taxAmount),
+    total: roundMoney(subtotal + taxAmount),
   }
 }
 

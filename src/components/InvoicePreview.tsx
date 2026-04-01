@@ -86,10 +86,6 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
                 {formatCurrency(totals.taxAmount, settings.currency, settings.locale)}
               </strong>
             </p>
-            <p>
-              <span>Discount ({invoice.discount}%)</span>
-              <strong>-</strong>
-            </p>
             <p className="grand-total">
               <span>Total</span>
               <strong>{formatCurrency(totals.total, settings.currency, settings.locale)}</strong>
