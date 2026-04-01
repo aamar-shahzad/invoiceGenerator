@@ -2,10 +2,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import InvoiceEditor from "./components/InvoiceEditor";
 import InvoicePreview from "./components/InvoicePreview";
 import SettingsPanel from "./components/SettingsPanel";
-import { calculateTotals } from "./lib/invoice";
+import { calculateTotals, validateLineItem } from "./lib/invoice";
 import { buildInvoicePdf } from "./lib/pdf";
 import { canShareFiles, downloadFile, shareFile } from "./lib/share";
 import {
+  getNextInvoiceNumber,
   loadBusinessProfile,
   loadInvoiceDraft,
   loadInvoiceSettings,
@@ -16,6 +17,7 @@ import {
 import type {
   BusinessProfile,
   CustomerProfile,
+  InvoiceLineItem,
   InvoiceDraft,
   InvoiceSettings,
 } from "./types/invoice";
@@ -27,6 +29,15 @@ const sameCustomer = (a: CustomerProfile, b: CustomerProfile): boolean =>
   a.address === b.address &&
   a.email === b.email &&
   a.phone === b.phone;
+
+const buildEmptyLineItem = (issueDate: string): InvoiceLineItem => ({
+  id: crypto.randomUUID(),
+  description: "",
+  periodFrom: issueDate,
+  periodTo: issueDate,
+  hours: Number.NaN,
+  hourlyRate: Number.NaN,
+});
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabKey>("invoice");
@@ -72,6 +83,14 @@ function App() {
   }, [invoice]);
 
   useEffect(() => {
+    if (invoice.invoiceNumber.trim()) return;
+    setInvoice((previous) => ({
+      ...previous,
+      invoiceNumber: getNextInvoiceNumber(),
+    }));
+  }, [invoice.invoiceNumber]);
+
+  useEffect(() => {
     setInvoice((previous) => ({
       ...previous,
       taxRate: settings.defaultTaxRate,
@@ -112,6 +131,20 @@ function App() {
   }, [invoice.customer]);
 
   const totals = useMemo(() => calculateTotals(invoice), [invoice]);
+  const lineItemErrorsById = useMemo(
+    () =>
+      Object.fromEntries(
+        invoice.items.map((item) => [item.id, validateLineItem(item)]),
+      ),
+    [invoice.items],
+  );
+  const hasLineItemErrors = useMemo(
+    () =>
+      Object.values(lineItemErrorsById).some(
+        (errors) => Object.keys(errors).length > 0,
+      ),
+    [lineItemErrorsById],
+  );
   const hasValidLineItem = useMemo(
     () =>
       invoice.items.some(
@@ -124,7 +157,7 @@ function App() {
     [invoice.items],
   );
   const canExport = Boolean(
-    business.name && invoice.customer.name && hasValidLineItem,
+    business.name && invoice.customer.name && hasValidLineItem && !hasLineItemErrors,
   );
 
   const createPdf = async (): Promise<File | null> => {
@@ -181,6 +214,21 @@ function App() {
     }
   };
 
+  const handleNewInvoice = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    setInvoice((previous) => ({
+      ...previous,
+      invoiceNumber: getNextInvoiceNumber(),
+      issueDate: today,
+      customer: settings.defaultCustomer,
+      items: [buildEmptyLineItem(today)],
+      taxRate: settings.defaultTaxRate,
+      notes: "",
+    }));
+    setActiveTab("invoice");
+    setStatusMessage("Started a new invoice.");
+  };
+
   return (
     <main className="app-shell">
       <header>
@@ -219,7 +267,23 @@ function App() {
       ) : null}
 
       {activeTab === "invoice" ? (
-        <InvoiceEditor invoice={invoice} onChange={setInvoice} />
+        <>
+          <section className="card action-bar">
+            <div>
+              <strong>Invoice Editor</strong>
+            </div>
+            <div className="action-buttons">
+              <button className="ghost" type="button" onClick={handleNewInvoice}>
+                New Invoice
+              </button>
+            </div>
+          </section>
+          <InvoiceEditor
+            invoice={invoice}
+            onChange={setInvoice}
+            errorsByItem={lineItemErrorsById}
+          />
+        </>
       ) : null}
 
       {activeTab === "preview" ? (

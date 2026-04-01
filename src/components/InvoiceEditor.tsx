@@ -1,11 +1,13 @@
 import type { InvoiceDraft } from "../types/invoice";
+import type { LineItemErrors } from "../lib/invoice";
 
 type InvoiceEditorProps = {
   invoice: InvoiceDraft;
   onChange: (next: InvoiceDraft) => void;
+  errorsByItem: Record<string, LineItemErrors>;
 };
 
-function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
+function InvoiceEditor({ invoice, onChange, errorsByItem }: InvoiceEditorProps) {
   const updateItem = (
     id: string,
     key: "description" | "periodFrom" | "periodTo" | "hours" | "hourlyRate",
@@ -142,70 +144,77 @@ function InvoiceEditor({ invoice, onChange }: InvoiceEditorProps) {
       <h3>Line Items</h3>
       <div className="items">
         {invoice.items.map((item) => (
-          <div key={item.id} className="item-row">
-            <label className="item-field">
-              <span>Description</span>
-              <input
-                placeholder="Description"
-                value={item.description}
-                onChange={(event) =>
-                  updateItem(item.id, "description", event.target.value)
-                }
-              />
-            </label>
-            <label className="item-field">
-              <span>From</span>
-              <input
-                type="date"
-                value={item.periodFrom}
-                onChange={(event) =>
-                  updateItem(item.id, "periodFrom", event.target.value)
-                }
-              />
-            </label>
-            <label className="item-field">
-              <span>To</span>
-              <input
-                type="date"
-                value={item.periodTo}
-                onChange={(event) =>
-                  updateItem(item.id, "periodTo", event.target.value)
-                }
-              />
-            </label>
-            <label className="item-field">
-              <span>Hours</span>
-              <input
-                type="number"
-                min={0}
-                step="0.25"
-                placeholder="e.g. 8"
-                value={Number.isFinite(item.hours) ? item.hours : ""}
-                onChange={(event) =>
-                  updateItem(item.id, "hours", event.target.value)
-                }
-              />
-            </label>
-            <label className="item-field">
-              <span>Rate / Hour</span>
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                placeholder="e.g. 45"
-                value={Number.isFinite(item.hourlyRate) ? item.hourlyRate : ""}
-                onChange={(event) =>
-                  updateItem(item.id, "hourlyRate", event.target.value)
-                }
-              />
-            </label>
-            <button
-              type="button"
-              className="ghost danger"
-              onClick={() => removeItem(item.id)}
-            >
-              Remove
-            </button>
+          <div key={item.id} className="item-block">
+            <div className="item-row">
+              <label className="item-field">
+                <span>Description</span>
+                <input
+                  placeholder="Description"
+                  value={item.description}
+                  onChange={(event) =>
+                    updateItem(item.id, "description", event.target.value)
+                  }
+                />
+              </label>
+              <label className="item-field">
+                <span>From</span>
+                <input
+                  type="date"
+                  value={item.periodFrom}
+                  onChange={(event) =>
+                    updateItem(item.id, "periodFrom", event.target.value)
+                  }
+                />
+              </label>
+              <label className="item-field">
+                <span>To</span>
+                <input
+                  type="date"
+                  value={item.periodTo}
+                  onChange={(event) =>
+                    updateItem(item.id, "periodTo", event.target.value)
+                  }
+                />
+              </label>
+              <label className="item-field">
+                <span>Hours</span>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.25"
+                  placeholder="e.g. 8"
+                  value={Number.isFinite(item.hours) ? item.hours : ""}
+                  onChange={(event) =>
+                    updateItem(item.id, "hours", event.target.value)
+                  }
+                />
+              </label>
+              <label className="item-field">
+                <span>Rate / Hour</span>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  placeholder="e.g. 45"
+                  value={Number.isFinite(item.hourlyRate) ? item.hourlyRate : ""}
+                  onChange={(event) =>
+                    updateItem(item.id, "hourlyRate", event.target.value)
+                  }
+                />
+              </label>
+              <button
+                type="button"
+                className="ghost danger"
+                onClick={() => removeItem(item.id)}
+              >
+                Remove
+              </button>
+            </div>
+            {Object.keys(errorsByItem[item.id] ?? {}).length ? (
+              <p className="field-error">
+                {Object.values(errorsByItem[item.id]).join(" ")}
+              </p>
+            ) : null}
           </div>
         ))}
         <button type="button" className="ghost" onClick={addItem}>

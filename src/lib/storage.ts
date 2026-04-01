@@ -11,6 +11,7 @@ import {
 const BUSINESS_KEY = "invoice-app:business";
 const SETTINGS_KEY = "invoice-app:settings";
 const INVOICE_DRAFT_KEY = "invoice-app:draft";
+const INVOICE_SEQUENCE_KEY = "invoice-app:invoice-sequence";
 
 const safeRead = <T>(key: string, fallback: T): T => {
   try {
@@ -89,4 +90,14 @@ export const loadInvoiceDraft = (): InvoiceDraft => {
 
 export const saveInvoiceDraft = (invoice: InvoiceDraft): void => {
   localStorage.setItem(INVOICE_DRAFT_KEY, JSON.stringify(invoice));
+};
+
+export const getNextInvoiceNumber = (): string => {
+  const currentYear = new Date().getFullYear();
+  const yearKey = `${INVOICE_SEQUENCE_KEY}:${currentYear}`;
+  const currentValue = Number(localStorage.getItem(yearKey) ?? "0");
+  const nextValue = Number.isFinite(currentValue) ? currentValue + 1 : 1;
+  localStorage.setItem(yearKey, String(nextValue));
+
+  return `INV-${currentYear}-${String(nextValue).padStart(3, "0")}`;
 };

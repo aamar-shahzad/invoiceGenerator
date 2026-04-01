@@ -1,4 +1,4 @@
-import type { InvoiceDraft, InvoiceTotals } from '../types/invoice'
+import type { InvoiceDraft, InvoiceLineItem, InvoiceTotals } from '../types/invoice'
 
 const roundMoney = (value: number): number =>
   Math.round((value + Number.EPSILON) * 100) / 100
@@ -35,3 +35,34 @@ export const formatCurrency = (
     currency,
     maximumFractionDigits: 2,
   }).format(safeNumber(value))
+
+export type LineItemErrors = {
+  description?: string
+  period?: string
+  hours?: string
+  hourlyRate?: string
+}
+
+export const validateLineItem = (item: InvoiceLineItem): LineItemErrors => {
+  const errors: LineItemErrors = {}
+
+  if (!item.description.trim()) {
+    errors.description = 'Description is required.'
+  }
+
+  if (!item.periodFrom || !item.periodTo) {
+    errors.period = 'From and To dates are required.'
+  } else if (item.periodFrom > item.periodTo) {
+    errors.period = 'From date cannot be after To date.'
+  }
+
+  if (!Number.isFinite(item.hours) || item.hours <= 0) {
+    errors.hours = 'Hours must be greater than 0.'
+  }
+
+  if (!Number.isFinite(item.hourlyRate) || item.hourlyRate < 0) {
+    errors.hourlyRate = 'Rate must be 0 or more.'
+  }
+
+  return errors
+}

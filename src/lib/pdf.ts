@@ -1,10 +1,12 @@
-import html2canvas from 'html2canvas'
-import { jsPDF } from 'jspdf'
-
 export const buildInvoicePdf = async (
   element: HTMLElement,
   fileName: string,
 ): Promise<File> => {
+  const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+    import('html2canvas'),
+    import('jspdf'),
+  ])
+
   const exportHost = document.createElement('div')
   exportHost.style.position = 'fixed'
   exportHost.style.left = '-10000px'
@@ -37,13 +39,20 @@ export const buildInvoicePdf = async (
   const pdf = new jsPDF('p', 'pt', 'a4')
   const pageWidth = pdf.internal.pageSize.getWidth()
   const pageHeight = pdf.internal.pageSize.getHeight()
-  const ratio = Math.min(pageWidth / canvas.width, pageHeight / canvas.height)
-  const renderWidth = canvas.width * ratio
-  const renderHeight = canvas.height * ratio
-  const x = (pageWidth - renderWidth) / 2
-  const y = 24
+  const margin = 20
+  const renderWidth = pageWidth - margin * 2
+  const renderHeight = (canvas.height * renderWidth) / canvas.width
+  const usableHeight = pageHeight - margin * 2
 
-  pdf.addImage(imageData, 'PNG', x, y, renderWidth, renderHeight)
+  let currentOffset = 0
+  pdf.addImage(imageData, 'PNG', margin, margin - currentOffset, renderWidth, renderHeight)
+
+  while (currentOffset + usableHeight < renderHeight) {
+    currentOffset += usableHeight
+    pdf.addPage()
+    pdf.addImage(imageData, 'PNG', margin, margin - currentOffset, renderWidth, renderHeight)
+  }
+
   const blob = pdf.output('blob')
   return new File([blob], `${fileName}.pdf`, { type: 'application/pdf' })
 }
